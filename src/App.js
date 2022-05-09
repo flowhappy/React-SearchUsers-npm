@@ -1,64 +1,57 @@
 import React, {Component} from 'react';
 import 'bootstrap/dist/js/bootstrap.min';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/css/bootstrap.min.css'
+import './App.css'
 import Header from "./components/Header";
-import Add from "./components/Add";
-import List from "./components/List";
-import Footer from "./components/Footer";
+import UserBox from "./components/UserBox";
+import axios from "axios";
 
 class App extends Component {
   state = {
-    tasks: [{id: '1', name: 'work1', done: true}, {id: '2', name: 'work2', done: false}, {
-      id: '3', name: 'work3', done: false
-    },]
-  }
-  addList = (dataObj) => {
-    this.setState({tasks: [dataObj, ...this.state.tasks]});
-  }
-
-  updateDone = (doneTaskId) => {
-    const target_task = this.state.tasks.map(n => {
-      return n.id === doneTaskId ? {...n, done: !(n.done)} : n;
-    })
-    this.setState({tasks: target_task})
+    users: [],
+    isFirst: true,
+    isError: false,
+    onLoading: false,
+    error: ''
   }
 
-  deleteTask = (id) => {
-    const newTask = this.state.tasks.filter(n => n.id !== id);
-    this.setState({tasks: newTask});
-  }
-  deleteDone = () => {
-    const newTask = this.state.tasks.filter(n => !n.done);
-    this.setState({tasks: newTask});
+  onLoading = () => {
+    this.setState({onLoading: true, isFirst: false, isError: false});
   }
 
-  selectAll = (done) => {
-    const newTask = this.state.tasks.map(n => {
-      return {...n, done}
-    })
-    this.setState({tasks: newTask});
+  getUser = (users) => {
+    this.setState({users: [...users], onLoading: false});
+  }
+
+  getError = (error) => {
+    this.setState({onLoading: false, isError: true, error});
   }
 
   render() {
-    return (<div>
-        <Header/>
-        <div className="container">
-          <div className="row">
-            <div className='col-lg-3'/>
-            <div className='col-lg-6' style={{
-              height: '320px', padding: '20px', borderRadius: '20px', boxShadow: '0 0 25px #dddddd'
-            }}>
-              <Add addList={this.addList}/>
-              <List updateDone={this.updateDone} deleteTask={this.deleteTask} tasks={this.state.tasks}/>
-              <Footer total={this.state.tasks.length} deleteDone={this.deleteDone} selectAll={this.selectAll}
-                      totalDone={this.state.tasks.filter(n => n.done).length}/>
+    const {users, isFirst, onLoading, isError, error} = this.state;
+    return (<div className='container'>
+      <Header getError={this.getError} getUser={this.getUser} onLoading={this.onLoading}/>
+      <div className='row userList'>
+        <div className='col-xs-2'/>
+        <div className='col-xs-8'>
+          <div className='container-fluid'>
+            <h2 style={{display: isError ? 'inherit' : 'none', textAlign: 'center', lineHeight: '50px',color:'red'}}>
+              {error}</h2>
+            <h2 style={{display: onLoading ? 'inherit' : 'none', textAlign: 'center', lineHeight: '50px'}}>
+              Loading...</h2>
+            <h2 style={{display: isFirst ? 'inherit' : 'none', textAlign: 'center', lineHeight: '50px'}}>
+              Welcome to use the Github user search tool <br/>
+              Type the name in the input box above</h2>
+            <div className="row" style={{display: onLoading ? 'none' : 'inherit'}}>
+              {users.map(n => {
+                return <UserBox key={n.id} users={n}/>
+              })}
             </div>
-            <div className='col-lg-3'/>
           </div>
         </div>
+        <div className='col-xs-2'/>
       </div>
-
-    );
+    </div>);
   }
 }
 

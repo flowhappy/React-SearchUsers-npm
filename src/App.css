@@ -1,0 +1,17 @@
+img {
+    width: 99.9%;
+    cursor: pointer;
+    box-shadow: 0 0 20px #999999;
+}
+
+img:hover {
+    transform: scale(1.15);
+}
+
+.userbox {
+    margin-top: 20px;
+}
+
+* {
+    transition: 300ms;
+}

@@ -1,24 +1,42 @@
 import React, {Component} from 'react';
-class Header extends Component {
+import axios from "axios";
+
+class Index extends Component {
+  search = () => {
+    let {inputNode: {value: i_value}} = this;
+    if (!i_value) return;
+    this.props.onLoading();
+    this.inputNode.value = '';
+    //https://api.github.com/search/users?q=xxxxxx
+    axios.get(
+      `https://api.github.com/search/users?q=${i_value}`
+    ).then(
+      response => {
+        this.props.getUser(response.data.items)
+      },
+      error => {
+        this.props.getError(error.message);
+        console.log(error);
+      }
+    )
+  }
+
   render() {
     return (
-      <div>
-          <div className="container">
-            <div className="jumbotron"
-                 style={
-                   {
-                     borderRadius:'0 0 20px 20px',
-                     padding:'20px',
-                     textAlign:'center'
-                   }
-                 }>
-              <h1>ToDoList</h1>
-              <p>Come and add your own todolist</p>
-            </div>
+      <div className="jumbotron" style={{marginBottom: '46px'}}>
+        <h1>React-SearchUser</h1>
+        <div className="navbar-form navbar-left" style={{marginBottom: '20px'}}>
+          <div className="form-group">
+            <input ref={c => this.inputNode = c} style={{width: '300px'}} type="text" className="form-control"
+                   placeholder="Enter the name that you wanna search"/>
           </div>
+          <button onClick={this.search} style={{marginLeft: '5px'}} className="btn btn-default">Submit
+          </button>
         </div>
+        <br/>
+      </div>
     );
   }
 }
 
-export default Header;
+export default Index;
